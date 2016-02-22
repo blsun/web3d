@@ -1,0 +1,6 @@
+{
+  "test_page": "test/index.html",
+  "src_files": [ "src/*.js", "src/**/*.js", "test/suite/*.js", "test/suite/**/*.js" ],
+  "before_tests": "sh -c scripts/run-test-suite",
+  "on_exit": "rm test/suite.js"
+}
