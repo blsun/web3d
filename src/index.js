@@ -79,7 +79,6 @@ module.exports = {
   colorEffects: require('./colorEffects'),
 
   // Miscellaneous functions.
-  supported: require('./supported'),
   registerDefaultControls: require('./controls/registerDefaultControls'),
   autorotate: require('./autorotate'),
 
