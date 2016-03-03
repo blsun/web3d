@@ -341,6 +341,13 @@
     // Hide content when close icon is clicked.
     modal.querySelector('.info-hotspot-close-wrapper').addEventListener('click', toggle);
 
+    // Prevent scroll events from bubbling up, as they may be cancelled by the controls.
+    [ 'wheel', 'mousewheel' ].forEach(function(eventName) {
+      wrapper.addEventListener(eventName, function(evt) {
+        evt.stopPropagation();
+      });
+    });
+
     return wrapper;
   }
 
