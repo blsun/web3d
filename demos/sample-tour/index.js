@@ -263,6 +263,10 @@
       switchScene(findSceneById(hotspot.target));
     });
 
+    // Prevent touch and scroll events from reaching the parent element.
+    // This prevents the view control logic from interfering with the hotspot.
+    stopTouchAndScrollEventPropagation(wrapper);
+
     // Create tooltip element.
     var tooltip = document.createElement('div');
     tooltip.classList.add('hotspot-tooltip');
@@ -341,14 +345,22 @@
     // Hide content when close icon is clicked.
     modal.querySelector('.info-hotspot-close-wrapper').addEventListener('click', toggle);
 
-    // Prevent scroll events from bubbling up, as they may be cancelled by the controls.
-    [ 'wheel', 'mousewheel' ].forEach(function(eventName) {
-      wrapper.addEventListener(eventName, function(evt) {
-        evt.stopPropagation();
-      });
-    });
+    // Prevent touch and scroll events from reaching the parent element.
+    // This prevents the view control logic from interfering with the hotspot.
+    stopTouchAndScrollEventPropagation(wrapper);
 
     return wrapper;
+  }
+
+  // Prevent touch and scroll events from reaching the parent element.
+  function stopTouchAndScrollEventPropagation(element, eventList) {
+    var eventList = [ 'touchstart', 'touchmove', 'touchend', 'touchcancel',
+                      'wheel', 'mousewheel' ];
+    for (var i = 0; i < eventList.length; i++) {
+      element.addEventListener(eventList[i], function(event) {
+        event.stopPropagation();
+      });
+    }
   }
 
   function findSceneById(id) {
