@@ -112,9 +112,6 @@ module.exports = {
     type: require('./util/type')
   },
 
-  // Version.
-  version: require('../tmp/version'),
-
   // Expose dependencies for clients to use.
   dependencies: {
     bowser: require('bowser'),

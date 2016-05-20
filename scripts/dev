@@ -24,8 +24,6 @@ BUILD=build
 
 mkdir -p $BUILD
 
-make-version
-
 make-swf $BUILD/marzipano.swf
 
 watchify -v -d \

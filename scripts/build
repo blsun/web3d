@@ -26,8 +26,6 @@ PREAMBLE=`sed s/VERSION_STRING/$VERSION/ $SRC/preamble.js`
 
 mkdir -p $DIST
 
-make-version
-
 make-swf $DIST/marzipano.swf
 
 browserify \
