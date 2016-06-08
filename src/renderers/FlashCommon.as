@@ -15,30 +15,27 @@
  */
 package {
 
-  import flash.external.ExternalInterface;
-  import flash.display.Sprite;
   import flash.display.Bitmap;
-  import flash.display.BlendMode;
-  import flash.display.StageScaleMode;
-  import flash.display.StageAlign;
   import flash.display.BitmapData;
+  import flash.display.BlendMode;
   import flash.display.Loader;
+  import flash.display.Sprite;
+  import flash.display.StageAlign;
+  import flash.display.StageScaleMode;
   import flash.events.ErrorEvent;
   import flash.events.Event;
   import flash.events.IOErrorEvent;
   import flash.events.UncaughtErrorEvent;
-  import flash.text.TextField;
-  import flash.system.Security;
-  import flash.geom.Point;
-  import flash.geom.Rectangle;
+  import flash.external.ExternalInterface;
   import flash.geom.Matrix;
   import flash.geom.Matrix3D;
-  import flash.geom.Vector3D;
   import flash.geom.PerspectiveProjection;
-  import flash.utils.ByteArray;
-  import flash.utils.Dictionary;
-  import flash.utils.setTimeout;
+  import flash.geom.Point;
+  import flash.geom.Rectangle;
+  import flash.geom.Vector3D;
   import flash.net.URLRequest;
+  import flash.system.Security;
+  import flash.utils.Dictionary;
 
   public class FlashCommon extends Sprite {
 
@@ -63,7 +60,7 @@ package {
       ExternalInterface.addCallback('drawCubeTiles', drawCubeTiles);
       ExternalInterface.addCallback('drawFlatTiles', drawFlatTiles);
 
-      var callbacksObjName:String = root.loaderInfo.parameters.callbacksObjName as String;
+      var callbacksObjName:String = loaderInfo.parameters.callbacksObjName as String;
       imageLoadedCallback = callbacksObjName + '.imageLoaded';
 
       Security.allowDomain("*");
