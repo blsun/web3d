@@ -40,6 +40,8 @@ package {
 
   public class FlashCommon extends Sprite {
 
+    private var initialized:Boolean = false;
+
     private var imageLoadedCallback:String = null;
 
     public function FlashCommon() {
@@ -91,7 +93,7 @@ package {
     }
 
     public function isReady():Boolean {
-      return true;
+      return initialized;
     }
 
     private function init():void {
@@ -99,6 +101,7 @@ package {
       stage.scaleMode = StageScaleMode.NO_SCALE;
       stage.align = StageAlign.TOP_LEFT;
       stage.frameRate = 60;
+      initialized = true;
     }
 
     private function convertFov(fov:Number, thisDimension:Number, otherDimension:Number):Number {

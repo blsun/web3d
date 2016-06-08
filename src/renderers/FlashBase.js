@@ -51,7 +51,7 @@ FlashBaseRenderer.prototype.destroy = function() {
 
 
 FlashBaseRenderer.prototype.startLayer = function(layer, rect) {
-  if (!this._flashElement.isReady) {
+  if (!this._flashElement.isReady || !this._flashElement.isReady()) {
     return;
   }
   if (!this._layerCreated) {
@@ -70,7 +70,7 @@ FlashBaseRenderer.prototype.renderTile = function(tile, texture) {
 
 
 FlashBaseRenderer.prototype.endLayer = function(layer, rect) {
-  if (!this._flashElement.isReady) {
+  if (!this._flashElement.isReady || !this._flashElement.isReady()) {
     return;
   }
 
