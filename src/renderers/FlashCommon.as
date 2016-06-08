@@ -285,7 +285,6 @@ package {
       var id:Number = nextId++;
 
       var loader:Loader = new Loader();
-      imageMap[id] = loader;
 
       loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadSuccess);
       loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadError);
@@ -297,6 +296,7 @@ package {
       var urlRequest:URLRequest = new URLRequest(url);
       loader.load(urlRequest, loaderContext);
 
+      imageMap[id] = loader;
       return id;
 
       function loadSuccess(e:Event):void {
@@ -307,17 +307,27 @@ package {
 
         var image:Bitmap = Bitmap(loader.content);
 
-        // Convert relative offset/size to absolute values.
-        x *= image.bitmapData.width;
-        y *= image.bitmapData.height;
-        width *= image.bitmapData.width;
-        height *= image.bitmapData.height;
+        // Get the image dimensions.
+        var imageWidth:Number = image.bitmapData.width;
+        var imageHeight:Number = image.bitmapData.height;
 
-        var croppedData:BitmapData = new BitmapData(width, height);
-        croppedData.copyPixels(image.bitmapData, new Rectangle(x, y, width, height), new Point(0,0));
+        // Convert relative offset and size to absolute values.
+        x *= imageWidth;
+        y *= imageHeight;
+        width *= imageWidth;
+        height *= imageHeight;
 
-        imageMap[id] = croppedData;
+        // Crop the image if required.
+        var bitmapData:BitmapData;
+        if (x !== 0 || y !== 0 || width !== imageWidth || height !== imageHeight) {
+          bitmapData = new BitmapData(width, height);
+          bitmapData.copyPixels(image.bitmapData,
+            new Rectangle(x, y, width, height), new Point(0,0));
+        } else {
+          bitmapData = image.bitmapData;
+        }
 
+        imageMap[id] = bitmapData;
         ExternalInterface.call(imageLoadedCallback, false, id);
       }
 
