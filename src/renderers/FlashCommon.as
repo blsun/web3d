@@ -34,6 +34,7 @@ package {
   import flash.geom.Rectangle;
   import flash.geom.Vector3D;
   import flash.net.URLRequest;
+  import flash.system.LoaderContext;
   import flash.system.Security;
   import flash.utils.Dictionary;
 
@@ -286,12 +287,15 @@ package {
       var loader:Loader = new Loader();
       imageMap[id] = loader;
 
-      // TODO: Check if there are there other kinds of errors we can catch.
       loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadSuccess);
       loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, loadError);
 
+      // Check the server policy file for cross-domain requests.
+      var loaderContext:LoaderContext = new LoaderContext();
+      loaderContext.checkPolicyFile = true;
+
       var urlRequest:URLRequest = new URLRequest(url);
-      loader.load(urlRequest);
+      loader.load(urlRequest, loaderContext);
 
       return id;
 
