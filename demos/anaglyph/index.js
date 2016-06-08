@@ -51,7 +51,7 @@ stage.addLayer(left);
 
 function createLayer(stage, view, geometry, eye) {
   // Create the source.
-  var urlPrefix = "https://storage.googleapis.com/marzipano-demos-media/music-room";
+  var urlPrefix = "//www.marzipano.net/media/music-room";
   var source = new Marzipano.ImageUrlSource.fromString(
     urlPrefix + "/" + eye + "/{z}/{f}/{y}/{x}.jpg",
     { cubeMapPreviewUrl: urlPrefix + "/" + eye + "/preview.jpg" });

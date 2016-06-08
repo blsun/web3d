@@ -21,7 +21,7 @@ var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 // The tiles were generated with the krpano tools, which index the tiles
 // from 1 instead of 0. Hence, we cannot use ImageUrlSource.fromString()
 // and must write a custom function to convert tiles into URLs.
-var urlPrefix = "https://storage.googleapis.com/marzipano-demos-media/lisboa";
+var urlPrefix = "//www.marzipano.net/media/lisboa";
 var tileUrl = function(z, x, y) {
   return urlPrefix + "/l" + z + "/" + y + "/l" + z + '_' + y + '_' + x + ".jpg";
 };

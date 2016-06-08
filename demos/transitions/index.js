@@ -20,16 +20,16 @@ var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
 // Create a geometry to be shared by the two scenes.
 var geometry = new Marzipano.CubeGeometry([
-    { "tileSize": 256, "size": 256, "fallbackOnly": true },
-    { "size": 512, "tileSize": 512 },
-    { "size": 1024, "tileSize": 512 },
-    { "size": 2048, "tileSize": 512 }
+    { tileSize: 256, size: 256, fallbackOnly: true },
+    { size: 512, tileSize: 512 },
+    { size: 1024, tileSize: 512 },
+    { size: 2048, tileSize: 512 }
 ]);
 
 // Create a view limiter to be shared by the two scenes.
 var limiter = Marzipano.RectilinearView.limit.traditional(2048, 120*Math.PI/180);
 
-var urlPrefix = "https://storage.googleapis.com/marzipano-demos-media";
+var urlPrefix = "//www.marzipano.net/media";
 
 // Set up the first scene.
 var view1 = new Marzipano.RectilinearView(null, limiter);

@@ -65,7 +65,7 @@ var levelsBelow = [512].map(function(size) {
 });
 var geometryBelow = new Marzipano.CubeGeometry(levelsBelow);
 var sourceBelow = new Marzipano.ImageUrlSource(function(tile) {
-  return { url: "https://storage.googleapis.com/marzipano-demos-media/pixels/red.png" };
+  return { url: "//www.marzipano.net/media/pixels/red.png" };
 });
 var textureStoreBelow = new Marzipano.TextureStore(geometryBelow, sourceBelow, stage);
 var layerBelow = new Marzipano.Layer(stage, sourceBelow, geometryBelow, view,
@@ -77,7 +77,7 @@ var levelsAbove = [512, 1024, 2048, 4096].map(function(size) {
 });
 var geometryAbove = new Marzipano.CubeGeometry(levelsAbove);
 var sourceAbove = new Marzipano.ImageUrlSource(function(tile) {
-  return { url: "https://storage.googleapis.com/marzipano-demos-media/generated-tiles/" +
+  return { url: "//www.marzipano.net/media/generated-tiles/" +
     tile.z + '_' + tile.face + '_' + tile.x + '_' + tile.y + '.png' };
 });
 var textureStoreAbove = new Marzipano.TextureStore(geometryAbove, sourceAbove, stage);

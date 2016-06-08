@@ -20,7 +20,7 @@ var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
 // Create source.
 var source = Marzipano.ImageUrlSource.fromString(
-  "https://storage.googleapis.com/marzipano-demos-media/equirect/angra.jpg"
+  "//www.marzipano.net/media/equirect/angra.jpg"
 );
 
 // Create geometry.

@@ -63,7 +63,7 @@ function setResolutionIndex(index, cb) {
   emitter.emit('resolutionSet');
 
   var level = resolutions[index];
-  var videoSrc = 'https://storage.googleapis.com/marzipano-demos-media/video/mercedes-f1-' + level.width + 'x' + level.width/2 + '.mp4';
+  var videoSrc = '//www.marzipano.net/media/video/mercedes-f1-' + level.width + 'x' + level.width/2 + '.mp4';
 
   var previousVideo = asset.video() && asset.video().videoElement();
 

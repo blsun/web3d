@@ -59,7 +59,7 @@ document.body.addEventListener('click', function() {
   }
   started = true;
   var video = document.createElement('video');
-  video.src = 'https://storage.googleapis.com/marzipano-demos-media/video/mercedes-f1-1280x640.mp4';
+  video.src = '//www.marzipano.net/media/video/mercedes-f1-1280x640.mp4';
   video.autoplay = true;
   video.crossOrigin = 'anonymous';
   video.loop = true;

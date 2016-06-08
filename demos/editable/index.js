@@ -31,7 +31,7 @@
   var stage = viewer.stage();
 
   // Create layers and add them into stage.
-  var imageUrl = "https://storage.googleapis.com/marzipano-demos-media/equirect/angra.jpg";
+  var imageUrl = "//www.marzipano.net/media/equirect/angra.jpg";
   createEditableLayers(stage, imageUrl, function(err, layers) {
     if (err) {
       throw err;

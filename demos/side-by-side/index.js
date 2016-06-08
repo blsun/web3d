@@ -47,7 +47,7 @@ stage.addLayer(leftLayer);
 stage.addLayer(rightLayer);
 
 function createLayer(stage, view, geometry, eye, rect) {
-  var urlPrefix = "https://storage.googleapis.com/marzipano-demos-media/music-room";
+  var urlPrefix = "//www.marzipano.net/media/music-room";
   var source = new Marzipano.ImageUrlSource.fromString(
     urlPrefix + "/" + eye + "/{z}/{f}/{y}/{x}.jpg",
     { cubeMapPreviewUrl: urlPrefix + "/" + eye + "/preview.jpg" });
