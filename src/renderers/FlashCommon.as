@@ -23,8 +23,10 @@ package {
   import flash.display.StageAlign;
   import flash.display.BitmapData;
   import flash.display.Loader;
+  import flash.events.ErrorEvent;
   import flash.events.Event;
   import flash.events.IOErrorEvent;
+  import flash.events.UncaughtErrorEvent;
   import flash.text.TextField;
   import flash.system.Security;
   import flash.geom.Point;
@@ -43,6 +45,10 @@ package {
     private var imageLoadedCallback:String = null;
 
     public function FlashCommon() {
+
+      // Install event handler for uncaught errors.
+      loaderInfo.uncaughtErrorEvents.addEventListener(
+          UncaughtErrorEvent.UNCAUGHT_ERROR, handleError);
 
       // Declare external interface.
       ExternalInterface.marshallExceptions = true
@@ -69,6 +75,18 @@ package {
       }
 
     }
+
+    private function handleError(event:UncaughtErrorEvent):void {
+      var message:String;
+      if (event.error is Error) {
+        message = Error(event.error).message;
+      } else if (event.error is ErrorEvent) {
+        message = ErrorEvent(event.error).text;
+      } else {
+        message = event.error.toString();
+      }
+      debug('ERROR: ' + message);
+    };
 
     private function debug(str:String):void {
       ExternalInterface.call('console.log', str);
@@ -101,7 +119,7 @@ package {
         debug('createLayer: ' + id + ' already exists');
         return;
       }
-      
+
       var layer:Sprite = new Sprite();
 
       layerMap[id] = layer;
