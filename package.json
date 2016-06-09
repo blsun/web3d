@@ -22,7 +22,7 @@
     "make-docs": "jsdoc -c jsdoc-conf.json"
   },
   "dependencies": {
-    "bowser": "^1.0.0",
+    "bowser": "^1.3.0",
     "gl-matrix": "^2.3.2",
     "glslify": "^5.0.2",
     "hammerjs": "git://github.com/digisfera/hammer.js.git",
