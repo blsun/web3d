@@ -18,7 +18,6 @@
 var mat4 = Marzipano.dependencies.glMatrix.mat4;
 var quat = Marzipano.dependencies.glMatrix.quat;
 
-var vrFovsToViewParams = Marzipano.RectilinearView.projectionCenter.vrFovsToViewParams;
 var degToRad = Marzipano.util.degToRad;
 
 var viewerElement = document.querySelector("#pano");
@@ -123,14 +122,24 @@ function createLayer(stage, view, geometry, eye, rect) {
 
 function setProjectionCenter(view, eyeParameters) {
   var fovs = eyeParameters.recommendedFieldOfView;
-  var viewParams = vrFovsToViewParams(degToRad(fovs.upDegrees),
-                                      degToRad(fovs.downDegrees),
-                                      degToRad(fovs.leftDegrees),
-                                      degToRad(fovs.rightDegrees));
+
+  var left = degToRad(fovs.leftDegrees),
+      right = degToRad(fovs.rightDegrees),
+      up = degToRad(fovs.upDegrees),
+      down = degToRad(fovs.downDegrees);
+
+  var hfov = left + right;
+  var offsetAngleX = left - hfov/2;
+  var projectionCenterX = Math.tan(offsetAngleX) / (2 * Math.tan(hfov/2));
+
+  var vfov = up + down;
+  var offsetAngleY = up - vfov/2;
+  var projectionCenterY = Math.tan(offsetAngleY) / (2 * Math.tan(vfov/2));
+
   view.setParameters({
-    projectionCenterX: viewParams.projectionCenterX,
-    projectionCenterY: viewParams.projectionCenterY,
-    fov: viewParams.vfov
+    projectionCenterX: projectionCenterX,
+    projectionCenterY: projectionCenterY,
+    fov: vfov
   });
 }
 

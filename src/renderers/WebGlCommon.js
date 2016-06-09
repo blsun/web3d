@@ -127,17 +127,16 @@ function setupPixelEffectUniforms(gl, effects, uniforms) {
   gl.uniform1f(uniforms.opacity, opacity);
 
   var colorOffset = defaultColorOffset;
-  if(effects && effects.colorOffset) {
+  if (effects && effects.colorOffset) {
     colorOffset = effects.colorOffset;
   }
   gl.uniform4fv(uniforms.colorOffset, colorOffset);
 
   var colorMatrix = defaultColorMatrix;
-  if(effects && effects.colorMatrix) {
+  if (effects && effects.colorMatrix) {
     colorMatrix = effects.colorMatrix;
   }
   gl.uniformMatrix4fv(uniforms.colorMatrix, false, colorMatrix);
-
 }
 
 

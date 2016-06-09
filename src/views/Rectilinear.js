@@ -24,7 +24,6 @@ var real = require('../util/real');
 var clamp = require('../util/clamp');
 var decimal = require('../util/decimal');
 var compose = require('../util/compose');
-var projectionCenter = require('./projectionCenter');
 var mat4 = require('gl-matrix/src/gl-matrix/mat4');
 var vec4 = require('gl-matrix/src/gl-matrix/vec4');
 
@@ -109,6 +108,7 @@ function RectilinearView(params, limiter) {
 
   // Temporary variables used for calculations.
   this._params = {};
+  this._fovs = {};
   this._vertex = vec4.create();
   this._invProj = mat4.create();
 
@@ -594,11 +594,26 @@ RectilinearView.prototype.projection = function() {
 
   if (this._projectionChanged) {
 
-    // Calculate projection matrix.
+    // Recalculate the projection matrix.
+
     var vfov = this._fov;
     var hfov = convertFov.vtoh(vfov, this._width, this._height);
 
-    projectionCenter.viewParamsToProjectionMatrix(this._projectionCenterX, this._projectionCenterY, vfov, hfov, -1, 1, p);
+    var projectionCenterX = this._projectionCenterX;
+    var projectionCenterY = this._projectionCenterY;
+
+    if (projectionCenterX !== 0 || projectionCenterY !== 0) {
+      var offsetAngleX = Math.atan(projectionCenterX * 2 * Math.tan(hfov/2));
+      var offsetAngleY = Math.atan(projectionCenterY * 2 * Math.tan(vfov/2));
+      var fovs = this._fovs;
+      fovs.left = hfov/2 + offsetAngleX * 180/Math.PI;
+      fovs.right = hfov/2 - offsetAngleX * 180/Math.PI;
+      fovs.up = (vfov/2 + offsetAngleY) * 180/Math.PI;
+      fovs.down = (vfov/2 - offsetAngleY) * 180/Math.PI;
+      mat4.perspectiveFromFieldOfView(p, fovs, -1, 1);
+    } else {
+      mat4.perspective(p, vfov, hfov/vfov, -1, 1);
+    }
 
     mat4.rotateZ(p, p, this._roll);
     mat4.rotateX(p, p, this._pitch);
@@ -966,9 +981,6 @@ RectilinearView.limit = {
   }
 
 };
-
-
-RectilinearView.projectionCenter = projectionCenter;
 
 
 RectilinearView.type = RectilinearView.prototype.type = 'rectilinear';
