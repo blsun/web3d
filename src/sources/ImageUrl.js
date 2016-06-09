@@ -42,10 +42,10 @@ var defaultRetryDelay = 10000;
 
 /**
  * @class
- * @classdesc Source that loads images from a URL. 
+ * @classdesc Source that loads images given a URL and a crop rectangle.
  * @implements Source
  * @param {Function} sourceFromTile Function that receives a tile and returns
- * an object `{ url, crop }`.
+ * an object `{ url, rect }`.
  * @param {Object} opts
  * @param {number} [opts.concurrency=4] Maximum number of tiles to load at the
  * same time.
