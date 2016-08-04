@@ -17,7 +17,6 @@
 
 var assert = require('proclaim');
 var sinon = require('sinon');
-var async = require('async');
 
 var eventEmitter = require('minimal-event-emitter');
 
