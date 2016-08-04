@@ -884,8 +884,6 @@ RectilinearView.limit = {
    * Return a view limiter that constrains the pitch angle.
    * @param {number} min the minimum pitch value
    * @param {number} max the maximum pitch value
-   * @param {number} min
-   * @param {number} max
    * @return {Function} view limiter
    */
   pitch: function(min, max) {
@@ -899,8 +897,6 @@ RectilinearView.limit = {
    * Return a view limiter that constrains the roll angle.
    * @param {number} min the minimum roll value
    * @param {number} max the maximum roll value
-   * @param {number} min
-   * @param {number} max
    * @return {Function} view limiter
    */
   roll: function(min, max) {
