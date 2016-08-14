@@ -21,8 +21,6 @@ precision mediump float;
 
 uniform sampler2D uSampler;
 uniform mat4 uPInvMatrix;
-uniform float uWidth;
-uniform float uHeight;
 uniform float uOpacity;
 varying vec2 vTextureCoord;
 uniform vec4 colorOffset;

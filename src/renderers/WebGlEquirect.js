@@ -36,8 +36,7 @@ var textureCoords = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
 
 var attribList = ['aVertexPosition', 'aTextureCoord'];
 var uniformList = ['uPInvMatrix', 'uDepth', 'vccMatrix', 'uSampler', 'uOpacity',
-  'uWidth', 'uHeight', 'colorOffset', 'colorMatrix',
-  'textureX', 'textureY', 'textureWidth', 'textureHeight'
+  'colorOffset', 'colorMatrix', 'textureX', 'textureY', 'textureWidth', 'textureHeight'
 ];
 
 var mat4 = require('gl-matrix/src/gl-matrix/mat4');
@@ -91,9 +90,6 @@ WebGlEquirectRenderer.prototype.startLayer = function(layer, rect) {
   mat4.invert(pMatrix, pMatrix);
 
   gl.uniformMatrix4fv(shaderProgram.uPInvMatrix, false, pMatrix);
-
-  this.gl.uniform1f(this.shaderProgram.uWidth, rect.width);
-  this.gl.uniform1f(this.shaderProgram.uHeight, rect.height);
 
   // Set textureCrop
   var textureCrop = layer.effects().textureCrop || {};
