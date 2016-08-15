@@ -19,14 +19,14 @@ precision highp float;
 precision mediump float;
 #endif
 
-varying vec2 vTextureCoord;
 uniform sampler2D uSampler;
 uniform float uOpacity;
-uniform vec4 colorOffset;
-uniform mat4 colorMatrix;
+uniform vec4 uColorOffset;
+uniform mat4 uColorMatrix;
+
+varying vec2 vTextureCoord;
 
 void main(void) {
-  vec4 color = texture2D(uSampler, vTextureCoord);
-  color = color * colorMatrix + colorOffset;
+  vec4 color = texture2D(uSampler, vTextureCoord) * uColorMatrix + uColorOffset;
   gl_FragColor = vec4(color.rgb * color.a * uOpacity, color.a * uOpacity);
 }

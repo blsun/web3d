@@ -15,15 +15,16 @@
  */
 attribute vec3 aVertexPosition;
 attribute vec2 aTextureCoord;
-varying vec2 vTextureCoord;
-uniform float uDepth;
-uniform mat4 vccMatrix;
-uniform mat4 uPInvMatrix;
 
+uniform float uDepth;
+uniform mat4 uViewportMatrix;
+uniform mat4 uInvProjMatrix;
+
+varying vec2 vTextureCoord;
 varying vec4 vRay;
 
 void main(void) {
-  vRay = uPInvMatrix * vec4(aVertexPosition.xy, 1.0, 1.0);
-  gl_Position = vccMatrix * vec4(aVertexPosition.xy, uDepth, 1.0);
+  vRay = uInvProjMatrix * vec4(aVertexPosition.xy, 1.0, 1.0);
+  gl_Position = uViewportMatrix * vec4(aVertexPosition.xy, uDepth, 1.0);
   vTextureCoord = aTextureCoord;
 }

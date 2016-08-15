@@ -21,15 +21,14 @@ precision mediump float;
 
 uniform sampler2D uSampler;
 uniform float uOpacity;
+uniform float uTextureX;
+uniform float uTextureY;
+uniform float uTextureWidth;
+uniform float uTextureHeight;
+uniform vec4 uColorOffset;
+uniform mat4 uColorMatrix;
+
 varying vec2 vTextureCoord;
-uniform vec4 colorOffset;
-uniform mat4 colorMatrix;
-
-uniform float textureX;
-uniform float textureY;
-uniform float textureWidth;
-uniform float textureHeight;
-
 varying vec4 vRay;
 
 const float PI = 3.14159265358979323846264;
@@ -41,10 +40,9 @@ void main(void) {
   float s = 0.5 + 0.5 * theta / PI;
   float t = 1.0 - phi / PI;
 
-  s = s * textureWidth + textureX;
-  t = t * textureHeight + textureY;
+  s = s * uTextureWidth + uTextureX;
+  t = t * uTextureHeight + uTextureY;
 
-  vec4 color = texture2D(uSampler, vec2(s, t));
-  color = color * colorMatrix + colorOffset;
+  vec4 color = texture2D(uSampler, vec2(s, t)) * uColorMatrix + uColorOffset;
   gl_FragColor = vec4(color.rgb * color.a * uOpacity, color.a * uOpacity);
 }

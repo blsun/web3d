@@ -35,7 +35,10 @@ var vertexPositions = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5
 var textureCoords = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
 
 var attribList = ['aVertexPosition', 'aTextureCoord'];
-var uniformList = ['vtMatrix', 'vccMatrix', 'uDepth', 'uSampler', 'uOpacity', 'colorOffset', 'colorMatrix'];
+var uniformList = [
+  'uDepth', 'uOpacity', 'uSampler', 'uProjMatrix', 'uViewportMatrix',
+  'uColorOffset', 'uColorMatrix'
+];
 
 var mat4 = require('gl-matrix/src/gl-matrix/mat4');
 var vec3 = require('gl-matrix/src/gl-matrix/vec3');
@@ -44,61 +47,59 @@ var vec3 = require('gl-matrix/src/gl-matrix/vec3');
 function WebGlBaseRenderer(gl) {
   this.gl = gl;
 
-  // vtMatrix is the matrix which has the view and tile transforms
-  // Seams are visible at large zoom levels when the projection and tile
-  // matrices are multiplied in the vertex shader. Therefore they are
-  // multiplied in Javascript.
-  this.vtMatrix = mat4.create();
+  // The projection matrix positions the tiles in world space.
+  // We compute it in Javascript because lack of precision in the vertex shader
+  // causes seams to appear between adjacent tiles at large zoom levels.
+  this.projMatrix = mat4.create();
 
-  // vccMatrix is the matrix to compensate for viewport clamping
-  // see the setViewport() function for more details
-  this.vccMatrix = mat4.create();
+  // The viewport matrix responsible for viewport clamping.
+  // See setViewport() for an explanation of how it works.
+  this.viewportMatrix = mat4.create();
 
+  // Translation and scale vectors for tiles.
   this.translateVector = vec3.create();
   this.scaleVector = vec3.create();
 
-  this.constantBuffers = createConstantBuffers(this.gl, vertexIndices, vertexPositions, textureCoords);
+  this.constantBuffers = createConstantBuffers(gl, vertexIndices, vertexPositions, textureCoords);
 
-  this.shaderProgram = createShaderProgram(this.gl, vertexSrc, fragmentSrc, attribList, uniformList);
+  this.shaderProgram = createShaderProgram(gl, vertexSrc, fragmentSrc, attribList, uniformList);
 }
 
 WebGlBaseRenderer.prototype.destroy = function() {
-
-  this.vtMatrix = null;
-  this.vccMatrix = null;
-  this.translateVector = null;
-  this.scaleVector = null;
-
   destroyConstantBuffers(this.gl, this.constantBuffers);
   this.constantBuffers = null;
 
   destroyShaderProgram(this.gl, this.shaderProgram);
   this.shaderProgram = null;
 
-  this.gl = null;
+  this.projMatrix = null;
+  this.viewportMatrix = null;
+  this.translateVector = null;
+  this.scaleVector = null;
 
+  this.gl = null;
 };
 
 WebGlBaseRenderer.prototype.startLayer = function(layer, rect) {
   var gl = this.gl;
   var shaderProgram = this.shaderProgram;
   var constantBuffers = this.constantBuffers;
+  var viewportMatrix = this.viewportMatrix;
 
   gl.useProgram(shaderProgram);
 
-  setViewport(gl, layer, rect, this.vccMatrix);
-  gl.uniformMatrix4fv(shaderProgram.vccMatrix, false, this.vccMatrix);
+  setViewport(gl, layer, rect, viewportMatrix);
+  gl.uniformMatrix4fv(shaderProgram.uViewportMatrix, false, viewportMatrix);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, constantBuffers.vertexPositions);
   gl.vertexAttribPointer(shaderProgram.aVertexPosition, 3, gl.FLOAT, gl.FALSE, 0, 0);
   gl.bindBuffer(gl.ARRAY_BUFFER, constantBuffers.textureCoords);
   gl.vertexAttribPointer(shaderProgram.aTextureCoord, 2, gl.FLOAT, gl.FALSE, 0, 0);
 
-
   setupPixelEffectUniforms(gl, layer.effects(), {
     opacity: shaderProgram.uOpacity,
-    colorOffset: shaderProgram.colorOffset,
-    colorMatrix: shaderProgram.colorMatrix
+    colorOffset: shaderProgram.uColorOffset,
+    colorMatrix: shaderProgram.uColorMatrix
   });
 };
 
@@ -107,11 +108,10 @@ WebGlBaseRenderer.prototype.endLayer = function() {};
 
 
 WebGlBaseRenderer.prototype.renderTile = function(tile, texture, layer, layerZ) {
-
   var gl = this.gl;
   var shaderProgram = this.shaderProgram;
   var constantBuffers = this.constantBuffers;
-  var vtMatrix = this.vtMatrix;
+  var projMatrix = this.projMatrix;
   var translateVector = this.translateVector;
   var scaleVector = this.scaleVector;
 
@@ -121,15 +121,15 @@ WebGlBaseRenderer.prototype.renderTile = function(tile, texture, layer, layerZ) 
 
   scaleVector[0] = tile.scaleX();
   scaleVector[1] = tile.scaleY();
-  scaleVector[2] = 1;
+  scaleVector[2] = 1.0;
 
-  mat4.copy(vtMatrix, layer.view().projection());
-  mat4.rotateX(vtMatrix, vtMatrix, tile.rotX());
-  mat4.rotateY(vtMatrix, vtMatrix, tile.rotY());
-  mat4.translate(vtMatrix, vtMatrix, translateVector);
-  mat4.scale(vtMatrix, vtMatrix, scaleVector);
+  mat4.copy(projMatrix, layer.view().projection());
+  mat4.rotateX(projMatrix, projMatrix, tile.rotX());
+  mat4.rotateY(projMatrix, projMatrix, tile.rotY());
+  mat4.translate(projMatrix, projMatrix, translateVector);
+  mat4.scale(projMatrix, projMatrix, scaleVector);
 
-  gl.uniformMatrix4fv(shaderProgram.vtMatrix, false, vtMatrix);
+  gl.uniformMatrix4fv(shaderProgram.uProjMatrix, false, projMatrix);
 
   setDepth(gl, shaderProgram, layerZ, tile.z);
 

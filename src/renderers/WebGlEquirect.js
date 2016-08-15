@@ -35,78 +35,83 @@ var vertexPositions = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, 1.0
 var textureCoords = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
 
 var attribList = ['aVertexPosition', 'aTextureCoord'];
-var uniformList = ['uPInvMatrix', 'uDepth', 'vccMatrix', 'uSampler', 'uOpacity',
-  'colorOffset', 'colorMatrix', 'textureX', 'textureY', 'textureWidth', 'textureHeight'
+var uniformList = [
+  'uDepth', 'uOpacity', 'uSampler', 'uInvProjMatrix', 'uViewportMatrix',
+  'uColorOffset', 'uColorMatrix', 'uTextureX', 'uTextureY', 'uTextureWidth',
+  'uTextureHeight'
 ];
 
 var mat4 = require('gl-matrix/src/gl-matrix/mat4');
 
 
 function WebGlEquirectRenderer(gl) {
-
   this.gl = gl;
 
-  this.pMatrix = mat4.create();
+  // The inverse projection matrix.
+  this.invProjMatrix = mat4.create();
 
-  // vccMatrix is the matrix to compensate for viewport clamping
-  // see the setViewport() function for more details
-  this.vccMatrix = mat4.create();
+  // The viewport matrix responsible for viewport clamping.
+  // See setViewport() for an explanation of how it works.
+  this.viewportMatrix = mat4.create();
 
-  this.constantBuffers = createConstantBuffers(this.gl, vertexIndices, vertexPositions, textureCoords);
+  this.constantBuffers = createConstantBuffers(gl, vertexIndices, vertexPositions, textureCoords);
 
-  this.shaderProgram = createShaderProgram(this.gl, vertexSrc, fragmentSrc, attribList, uniformList);
+  this.shaderProgram = createShaderProgram(gl, vertexSrc, fragmentSrc, attribList, uniformList);
 }
 
 WebGlEquirectRenderer.prototype.destroy = function() {
-  this.pMatrix = null;
   destroyConstantBuffers(this.gl, this.constantBuffers);
   this.constantBuffers = null;
 
   destroyShaderProgram(this.gl, this.shaderProgram);
   this.shaderProgram = null;
 
+  this.invProjMatrix = null;
+  this.viewportMatrix = null;
+
   this.gl = null;
 };
 
 
 WebGlEquirectRenderer.prototype.startLayer = function(layer, rect) {
-
   var gl = this.gl;
   var shaderProgram = this.shaderProgram;
   var constantBuffers = this.constantBuffers;
-  var pMatrix = this.pMatrix;
+  var invProjMatrix = this.invProjMatrix;
+  var viewportMatrix = this.viewportMatrix;
 
-  gl.useProgram(this.shaderProgram);
+  gl.useProgram(shaderProgram);
 
-  setViewport(gl, layer, rect, this.vccMatrix);
-  gl.uniformMatrix4fv(shaderProgram.vccMatrix, false, this.vccMatrix);
+  setViewport(gl, layer, rect, viewportMatrix);
+  gl.uniformMatrix4fv(shaderProgram.uViewportMatrix, false, viewportMatrix);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, constantBuffers.vertexPositions);
   gl.vertexAttribPointer(shaderProgram.aVertexPosition, 3, gl.FLOAT, gl.FALSE, 0, 0);
   gl.bindBuffer(gl.ARRAY_BUFFER, constantBuffers.textureCoords);
   gl.vertexAttribPointer(shaderProgram.aTextureCoord, 2, gl.FLOAT, gl.FALSE, 0, 0);
 
-  mat4.copy(this.pMatrix, layer.view().projection());
-  mat4.invert(pMatrix, pMatrix);
+  // Compute and set the inverse projection matrix.
+  mat4.copy(invProjMatrix, layer.view().projection());
+  mat4.invert(invProjMatrix, invProjMatrix);
 
-  gl.uniformMatrix4fv(shaderProgram.uPInvMatrix, false, pMatrix);
+  gl.uniformMatrix4fv(shaderProgram.uInvProjMatrix, false, invProjMatrix);
 
-  // Set textureCrop
+  // Compute and set the texture scale and crop offsets.
   var textureCrop = layer.effects().textureCrop || {};
   var textureX = textureCrop.x != null ? textureCrop.x : 0;
   var textureY = textureCrop.y != null ? textureCrop.y : 0;
   var textureWidth = textureCrop.width != null ? textureCrop.width : 1;
   var textureHeight = textureCrop.height != null ? textureCrop.height : 1;
 
-  this.gl.uniform1f(this.shaderProgram.textureX, textureX);
-  this.gl.uniform1f(this.shaderProgram.textureY, textureY);
-  this.gl.uniform1f(this.shaderProgram.textureWidth, textureWidth);
-  this.gl.uniform1f(this.shaderProgram.textureHeight, textureHeight);
+  gl.uniform1f(shaderProgram.uTextureX, textureX);
+  gl.uniform1f(shaderProgram.uTextureY, textureY);
+  gl.uniform1f(shaderProgram.uTextureWidth, textureWidth);
+  gl.uniform1f(shaderProgram.uTextureHeight, textureHeight);
 
   setupPixelEffectUniforms(gl, layer.effects(), {
     opacity: shaderProgram.uOpacity,
-    colorOffset: shaderProgram.colorOffset,
-    colorMatrix: shaderProgram.colorMatrix
+    colorOffset: shaderProgram.uColorOffset,
+    colorMatrix: shaderProgram.uColorMatrix
   });
 };
 
@@ -115,7 +120,6 @@ WebGlEquirectRenderer.prototype.endLayer = function() {};
 
 
 WebGlEquirectRenderer.prototype.renderTile = function(tile, texture, layer, layerZ) {
-
   var gl = this.gl;
   var shaderProgram = this.shaderProgram;
   var constantBuffers = this.constantBuffers;

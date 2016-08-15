@@ -16,8 +16,8 @@
 'use strict';
 
 // These are used to set the WebGl depth for a tile.
-var MAX_LAYERS = 256; // Max number of layers per stage
-var MAX_LEVELS = 256; // Max number of levels per layer
+var MAX_LAYERS = 256; // Max number of layers per stage.
+var MAX_LEVELS = 256; // Max number of levels per layer.
 
 var pixelRatio = require('../util/pixelRatio');
 var clamp = require('../util/clamp');
@@ -146,7 +146,7 @@ function setupPixelEffectUniforms(gl, effects, uniforms) {
 
 var viewportParameters = {};
 
-function setViewport(gl, layer, rect, vccMatrix) {
+function setViewport(gl, layer, rect, viewportMatrix) {
   var ratio = pixelRatio();
   // Setting a negative offset on the viewport causes rendering problems
   // Using a negative offset, the viewport size is larger than it should and
@@ -161,7 +161,7 @@ function setViewport(gl, layer, rect, vccMatrix) {
   // However, this may still have a performance impact. Therefore, the maximum
   // values are also clamped.
 
-  rectToViewport(rect, viewportParameters, vccMatrix);
+  rectToViewport(rect, viewportParameters, viewportMatrix);
   gl.viewport(ratio * viewportParameters.offsetX,
               ratio * viewportParameters.offsetY,
               ratio * viewportParameters.width,
@@ -172,8 +172,8 @@ function setViewport(gl, layer, rect, vccMatrix) {
 var translateVector = vec3.create();
 var scaleVector = vec3.create();
 
-function rectToViewport(rect, resultParameters, resultVccMatrix) {
-  /* Horizontal axis */
+function rectToViewport(rect, resultParameters, resultViewportMatrix) {
+  // Horizontal axis.
   var offsetX = rect.left;
   var totalWidth = rect.totalWidth;
   var clampedOffsetX = clamp(offsetX, 0, totalWidth);
@@ -186,9 +186,7 @@ function rectToViewport(rect, resultParameters, resultVccMatrix) {
   resultParameters.offsetX = clampedOffsetX;
   resultParameters.width = clampedWidth;
 
-  /* Vertical axis */
-  // WebGL coordinates start from bottom, while rect starts from top
-  // offsetY is from bottom
+  // Vertical axis.
   var offsetY = rect.totalHeight - rect.bottom;
   var totalHeight = rect.totalHeight;
   var clampedOffsetY = clamp(offsetY, 0, totalHeight);
@@ -201,48 +199,45 @@ function rectToViewport(rect, resultParameters, resultVccMatrix) {
   resultParameters.offsetY = clampedOffsetY;
   resultParameters.height = clampedHeight;
 
+  // Compensation matrix for shader.
+  // This matrix is used to scale and offset the vertices by the necessary
+  // amount to compensate the viewport clamping.
 
-  /* Compensation matrix for shader */
-  // This matrix is used to scale and offset the vertexes by the
-  // necessary amount to compensate the viewport clamping
-
-  // Scaling is easy. Just revert the scaling that a smaller viewport
-  // will cause.
+  // Scaling is easy. Just revert the scaling that a smaller viewport would
+  // cause.
   scaleVector[0] = rect.width / clampedWidth;
   scaleVector[1] = rect.height / clampedHeight;
   scaleVector[2] = 1;
 
   // Translating is more complicated. The center of the view will be at
   // the center of the viewport, but it should actually be offset according
-  // to rect.
-  // One translation is be required to compensate for clamping at the
+  // to rect. One translation is be required to compensate for clamping at the
   // beginning of the viewport and another for clamping at the end of the
   // viewport. The two are calculated and subtracted.
 
-  // Horizontal axis translation compensation
+  // Horizontal axis translation compensation.
   var leftClampCompensation = clampedOffsetX - offsetX;
 
   var rightmost = offsetX + rect.width;
   var clampedRightmost = clampedOffsetX + clampedWidth;
   var rightClampCompensation = rightmost - clampedRightmost;
 
-
-  // Vertical axis translation compensation
+  // Vertical axis translation compensation.
   var bottomClampCompensation = clampedOffsetY - offsetY;
 
   var topmost = offsetY + rect.height;
   var clampedTopmost = clampedOffsetY + clampedHeight;
   var topClampCompensation = topmost - clampedTopmost;
 
-  // Divide by the viewport's size to convert from pixels to viewport coordinates
+  // Divide by the viewport size to convert from pixels to viewport coordinates.
   translateVector[0] = (rightClampCompensation - leftClampCompensation)/clampedWidth;
   translateVector[1] = (topClampCompensation - bottomClampCompensation)/clampedHeight;
   translateVector[2] = 0;
 
-  var vccMatrix = resultVccMatrix;
-  mat4.identity(vccMatrix);
-  mat4.translate(vccMatrix, vccMatrix, translateVector);
-  mat4.scale(vccMatrix, vccMatrix, scaleVector);
+  var viewportMatrix = resultViewportMatrix;
+  mat4.identity(viewportMatrix);
+  mat4.translate(viewportMatrix, viewportMatrix, translateVector);
+  mat4.scale(viewportMatrix, viewportMatrix, scaleVector);
 }
 
 
