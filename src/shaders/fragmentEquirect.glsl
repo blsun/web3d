@@ -20,7 +20,6 @@ precision mediump float;
 #endif
 
 uniform sampler2D uSampler;
-uniform mat4 uPInvMatrix;
 uniform float uOpacity;
 varying vec2 vTextureCoord;
 uniform vec4 colorOffset;
@@ -31,14 +30,13 @@ uniform float textureY;
 uniform float textureWidth;
 uniform float textureHeight;
 
+varying vec4 vRay;
+
 const float PI = 3.14159265358979323846264;
 
 void main(void) {
-  float x = 2.0 * vTextureCoord.x - 1.0;
-  float y = 2.0 * vTextureCoord.y - 1.0;
-  vec4 pos = uPInvMatrix * vec4(x, y, 1.0, 1.0);
-  float r = inversesqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-  float phi  = acos(pos.y * r);
+  vec4 pos = normalize(vRay);
+  float phi  = acos(pos.y);
   float theta = atan(pos.x, -1.0*pos.z);
   float s = 0.5 + 0.5 * theta / PI;
   float t = 1.0 - phi / PI;
