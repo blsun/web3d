@@ -142,8 +142,9 @@ ImageUrlSource.fromString = function(url, opts) {
     var tileUrl = url;
 
     for (var property in templateProperties) {
+      var templateProperty = templateProperties[property];
       var regExp = propertyRegExp(property);
-      var valueFromTile = tile[templateProperties[property]] || '';
+      var valueFromTile = tile.hasOwnProperty(templateProperty) ? tile[templateProperty] : '';
       tileUrl = tileUrl.replace(regExp, valueFromTile);
     }
 
