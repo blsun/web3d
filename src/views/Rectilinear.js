@@ -596,8 +596,12 @@ RectilinearView.prototype.projection = function() {
 
     // Recalculate the projection matrix.
 
+    var width = this._width;
+    var height = this._height;
+
     var vfov = this._fov;
-    var hfov = convertFov.vtoh(vfov, this._width, this._height);
+    var hfov = convertFov.vtoh(vfov, width, height);
+    var aspect = width / height;
 
     var projectionCenterX = this._projectionCenterX;
     var projectionCenterY = this._projectionCenterY;
@@ -612,7 +616,7 @@ RectilinearView.prototype.projection = function() {
       fovs.down = (vfov/2 - offsetAngleY) * 180/Math.PI;
       mat4.perspectiveFromFieldOfView(p, fovs, -1, 1);
     } else {
-      mat4.perspective(p, vfov, hfov/vfov, -1, 1);
+      mat4.perspective(p, vfov, aspect, -1, 1);
     }
 
     mat4.rotateZ(p, p, this._roll);
