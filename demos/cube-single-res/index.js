@@ -15,8 +15,6 @@
  */
 'use strict';
 
-var Marzipano = window.Marzipano;
-
 // Create viewer.
 var viewer = new Marzipano.Viewer(document.getElementById('pano'));
 
