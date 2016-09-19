@@ -130,10 +130,15 @@ function Viewer(domElement, opts) {
   // Controls cannot be placed directly on the root DOM element because
   // Hammer.js will prevent click events from reaching the elements beneath.
 
-  // The hotspot containers will be added inside the controls container
+  // The hotspot containers will be added inside the controls container.
   this._controlContainer = document.createElement('div');
   setAbsolute(this._controlContainer);
   setFullSize(this._controlContainer);
+
+  // Prevent bounce scroll effect on iOS.
+  this._controlContainer.addEventListener('touchstart', function(event) {
+    event.preventDefault();
+  });
 
   // Old IE does not detect mouse events on elements without background
   // Add a child element to the controls with full width, a background color
