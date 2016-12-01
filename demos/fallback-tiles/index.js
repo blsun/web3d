@@ -89,8 +89,9 @@ stage.addLayer(layerBelow);
 stage.addLayer(layerAbove);
 
 // Add stage into DOM and update its size.
-document.getElementById('rendered').appendChild(stage.domElement());
-stage.updateSize();
+var container = document.getElementById('rendered');
+container.appendChild(stage.domElement());
+stage.setSize({ width: container.clientWidth, height: container.clientHeight });
 
 // Pin level 0 so it serves as the last-resort fallback.
 layerBelow.pinLevel(0);
