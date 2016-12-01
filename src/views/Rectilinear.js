@@ -610,10 +610,10 @@ RectilinearView.prototype.projection = function() {
       var offsetAngleX = Math.atan(projectionCenterX * 2 * Math.tan(hfov/2));
       var offsetAngleY = Math.atan(projectionCenterY * 2 * Math.tan(vfov/2));
       var fovs = this._fovs;
-      fovs.left = hfov/2 + offsetAngleX * 180/Math.PI;
-      fovs.right = hfov/2 - offsetAngleX * 180/Math.PI;
-      fovs.up = (vfov/2 + offsetAngleY) * 180/Math.PI;
-      fovs.down = (vfov/2 - offsetAngleY) * 180/Math.PI;
+      fovs.leftDegrees = (hfov/2 + offsetAngleX) * 180/Math.PI;
+      fovs.rightDegrees = (hfov/2 - offsetAngleX) * 180/Math.PI;
+      fovs.upDegrees = (vfov/2 + offsetAngleY) * 180/Math.PI;
+      fovs.downDegrees = (vfov/2 - offsetAngleY) * 180/Math.PI;
       mat4.perspectiveFromFieldOfView(p, fovs, -1, 1);
     } else {
       mat4.perspective(p, vfov, aspect, -1, 1);
