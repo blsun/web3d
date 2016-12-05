@@ -34,9 +34,9 @@ varying vec4 vRay;
 const float PI = 3.14159265358979323846264;
 
 void main(void) {
-  vec4 pos = normalize(vRay);
-  float phi  = acos(pos.y);
-  float theta = atan(pos.x, -1.0*pos.z);
+  float r = inversesqrt(vRay.x * vRay.x + vRay.y * vRay.y + vRay.z * vRay.z);
+  float phi  = acos(vRay.y * r);
+  float theta = atan(vRay.x, -1.0*vRay.z);
   float s = 0.5 + 0.5 * theta / PI;
   float t = 1.0 - phi / PI;
 
