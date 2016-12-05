@@ -25,5 +25,8 @@ ARCHIVE=marzipano-$VERSION.zip
 
 echo "{ \"version\": \"$VERSION\", \"file\": \"marzipano-$VERSION.zip\" }" > $DIST/latest.json
 
+gsutil cp $DIST/marzipano.js gs://www.marzipano.net/build
+gsutil cp $DIST/marzipano.swf gs://www.marzipano.net/build
+
 gsutil cp $DIST/$ARCHIVE gs://www.marzipano.net/releases
 gsutil cp $DIST/latest.json gs://www.marzipano.net/releases
