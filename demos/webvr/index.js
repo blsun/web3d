@@ -32,10 +32,11 @@ Marzipano.registerDefaultRenderers(stage);
 viewerElement.appendChild(stage.domElement());
 
 // Update the stage size whenever the window is resized.
-stage.updateSize();
-window.addEventListener('resize', function() {
-  stage.updateSize();
-});
+function updateSize() {
+  stage.setSize({ width: viewerElement.clientWidth, height: viewerElement.clientHeight });
+}
+updateSize();
+window.addEventListener('resize', updateSize);
 
 // Create and start the render loop.
 var renderLoop = new Marzipano.RenderLoop(stage);
