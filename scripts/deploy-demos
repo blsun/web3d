@@ -4,4 +4,4 @@ cd "`dirname $0`/.."
 
 # https://cloud.google.com/storage/docs/gsutil/commands/rsync
 # -m to perform parallel operations (good for many files)
-gsutil -m cp -r demos gs://www.marzipano.net/demos
+gsutil -m cp -r demos gs://www.marzipano.net/
